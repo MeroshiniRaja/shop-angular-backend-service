@@ -2,7 +2,8 @@
 const fs = require("fs");
 
 module.exports.getProductsList = async (event) => {
-  const jsonString = fs.readFileSync("./product.json");
+  try {
+    const jsonString = fs.readFileSync("./product.json");
   const productsList = JSON.parse(jsonString);
     return {
       statusCode: 200,
@@ -13,10 +14,16 @@ module.exports.getProductsList = async (event) => {
       },
       body: JSON.stringify(productsList)
     }; 
+  }catch (err) {
+    return {
+      statusCode: 404,
+      body: 'No Item Found',
+    };
+  }  
 };
 
 module.exports.getProductsById = async (event) => {
- // try {
+ try {
     let productId = event.pathParameters.productId;
     console.log(productId);
     let product = await getProductsById(productId);
@@ -25,12 +32,12 @@ module.exports.getProductsById = async (event) => {
       statusCode: 200,
       body: JSON.stringify(product),
     };
-  // } catch (err) {
-  //   return {
-  //     statusCode: 404,
-  //     body: 'No Item Found',
-  //   };
-  // }
+  } catch (err) {
+    return {
+      statusCode: 404,
+      body: 'No Item Found',
+    };
+  }
 };
 
 function getProductsById(id) {
