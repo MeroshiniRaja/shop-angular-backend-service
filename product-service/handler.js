@@ -1,66 +1,47 @@
 'use strict';
+const fs = require("fs");
 
 module.exports.getProductsList = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify([
-      {
-        "count": 4,
-        "description": "Short Product Description1",
-        "id": "7567ec4b-b10c-48c5-9345-fc73c48a80aa",
-        "price": 2.4,
-        "title": "ProductOne"
+  const jsonString = fs.readFileSync("./product.json");
+  const productsList = JSON.parse(jsonString);
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Headers" : "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
       },
-      {
-        "count": 6,
-        "description": "Short Product Description3",
-        "id": "7567ec4b-b10c-48c5-9345-fc73c48a80a0",
-        "price": 10,
-        "title": "ProductNew"
-      },
-      {
-        "count": 7,
-        "description": "Short Product Description2",
-        "id": "7567ec4b-b10c-48c5-9345-fc73c48a80a2",
-        "price": 23,
-        "title": "ProductTop"
-      },
-      {
-        "count": 12,
-        "description": "Short Product Description7",
-        "id": "7567ec4b-b10c-48c5-9345-fc73c48a80a1",
-        "price": 15,
-        "title": "ProductTitle"
-      },
-      {
-        "count": 7,
-        "description": "Short Product Description2",
-        "id": "7567ec4b-b10c-48c5-9345-fc73c48a80a3",
-        "price": 23,
-        "title": "Product"
-      },
-      {
-        "count": 8,
-        "description": "Short Product Description4",
-        "id": "7567ec4b-b10c-48c5-9345-fc73348a80a1",
-        "price": 15,
-        "title": "ProductTest"
-      },
-      {
-        "count": 2,
-        "description": "Short Product Descriptio1",
-        "id": "7567ec4b-b10c-48c5-9445-fc73c48a80a2",
-        "price": 23,
-        "title": "Product2"
-      },
-      {
-        "count": 3,
-        "description": "Short Product Description7",
-        "id": "7567ec4b-b10c-45c5-9345-fc73c48a80a1",
-        "price": 15,
-        "title": "ProductName"
-      }
-    ]
-    )
-  };
+      body: JSON.stringify(productsList)
+    }; 
 };
+
+module.exports.getProductsById = async (event) => {
+ // try {
+    let productId = event.pathParameters.productId;
+    console.log(productId);
+    let product = await getProductsById(productId);
+    console.log(product);
+    return {
+      statusCode: 200,
+      body: JSON.stringify(product),
+    };
+  // } catch (err) {
+  //   return {
+  //     statusCode: 404,
+  //     body: 'No Item Found',
+  //   };
+  // }
+};
+
+function getProductsById(id) {
+  const jsonString = fs.readFileSync("./product.json");
+  const customer = JSON.parse(jsonString);
+  let result = ''
+  customer.map(c => {
+    if (c.id === id) {
+      result = c;
+    }
+  });
+  return result;
+}
+
