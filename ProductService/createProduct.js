@@ -4,7 +4,7 @@ const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 const ULID = require("ulid");
 
 module.exports.createProduct = async (event) => {
-    const {product} = JSON.parse(event.body);
+    const {title,description,price} = JSON.parse(event.body);
     const id = ULID.ulid();
 
     const dynamoClient = new DynamoDBClient({ region: "us-east-1" });
