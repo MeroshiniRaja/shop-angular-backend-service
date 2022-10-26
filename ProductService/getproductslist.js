@@ -5,6 +5,8 @@ const { DynamoDBClient, ScanCommand } = require("@aws-sdk/client-dynamodb");
 module.exports.getproductslist = async (event) => {
   const dynamoClient = new DynamoDBClient({ region: "us-east-1" });
 
+  console.log("GET", "getProductslist");
+
   const ProductTable = {
     TableName: "ProductsListTable"
   }
@@ -55,7 +57,7 @@ module.exports.getproductslist = async (event) => {
       body: JSON.stringify(formattedObjects)
     };
   } catch (err) {
-    console.log(err);
+    console.log(`Something went wrong: ${err}`, 500);
   }
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };

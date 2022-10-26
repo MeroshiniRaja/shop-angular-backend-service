@@ -5,6 +5,8 @@ const { DynamoDBClient, GetItemCommand } = require("@aws-sdk/client-dynamodb");
 module.exports.productsbyid = async (event) => {
   const { productId } = event.pathParameters;
 
+  console.log("GET", "getProductsById", event.pathParameters);
+
   const dynamoClient = new DynamoDBClient({ region: "us-east-1" });
 
   const ProductTable = {
@@ -34,7 +36,7 @@ module.exports.productsbyid = async (event) => {
 
     if (!formattedObjects) {
       return {
-        statusCode: 404,
+        statusCode: 400,
         headers: {
           'Access-Control-Allow-Origin': '*',
         },
@@ -48,7 +50,7 @@ module.exports.productsbyid = async (event) => {
       body: JSON.stringify(formattedObjects)
     };
   } catch (err) {
-    console.log(err);
+    console.log(`Something went wrong: ${err}`, 500);
   }
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
