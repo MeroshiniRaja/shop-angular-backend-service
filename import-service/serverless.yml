@@ -78,6 +78,16 @@ functions:
       - http:
           path: /import
           method: get
+  importFileParser:
+    handler: handler.importFileParser
+    events:
+      - s3:
+          bucket: aws-import-service-bucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploaded/
+          existing: true
+
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -129,3 +139,5 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+plugins:
+  - serverless-plugin-existing-s3
