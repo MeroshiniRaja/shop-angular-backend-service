@@ -38,22 +38,24 @@ module.exports.importFileParser = async (event) => {
       Bucket: BUCKET,
       Key: record.s3.object.key
     }
-
+    console.log("Streaming File");
     const s3Stream = s3.getObject(params).createReadStream();
 
     s3Stream.on('data',(row)=>{
-      console.log(row.toString());
+      console.log("Parsed Data", row.toString());
     }).on('end',()=>{
       console.log("Reached End!")
     })
 
     // Copy object and delete object
+    console.log("Copying file");
     await s3.copyObject({
       Bucket: BUCKET,
       CopySource: BUCKET + '/' + record.s3.object.key,
       Key: record.s3.object.key.replace('uploaded','parsed')
     }).promise();
 
+    console.log("Deleting file");
     await s3.deleteObject({
       Bucket:BUCKET,
       Key: record.s3.object.key
