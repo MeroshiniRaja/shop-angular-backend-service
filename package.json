@@ -20,8 +20,10 @@
     "aws-sdk": "^2.1240.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-source-map-support": "^2.1.2",
+    "csv-parser": "^3.0.0",
     "fs": "^0.0.1-security",
     "serverless-offline": "^11.1.1",
+    "serverless-plugin-existing-s3": "^2.4.0",
     "ulid": "^2.3.0",
     "webpack-node-externals": "^3.0.0"
   }
