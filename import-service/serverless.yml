@@ -20,6 +20,9 @@ service: import-service
 # Check out our docs for more details
 frameworkVersion: '3'
 
+custom:
+  TopicArn: arn:aws:sns:us-east-1:342406933836:createProductTopic
+
 provider:
   name: aws
   runtime: nodejs14.x
@@ -36,6 +39,25 @@ provider:
         - Effect: Allow
           Action: s3:*
           Resource: arn:aws:s3:::aws-import-service-bucket/*
+        - Effect: Allow
+          Action: sqs:SendMessage
+          Resource: arn:aws:sqs:us-east-1:342406933836:catalogItemsQueue
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - "arn:aws:dynamodb:us-east-1:342406933836:table/ProductsListTable"
+            - "arn:aws:dynamodb:us-east-1:342406933836:table/StockListTable"
+        - Effect: Allow
+          Action:
+            - "sns:*"
+          Resource:
+            Ref: createProductTopic
           
 # you can overwrite defaults here
 #  stage: dev
@@ -87,6 +109,15 @@ functions:
           rules:
             - prefix: uploaded/
           existing: true
+  catalogBatchProcess:
+    handler: handler.catalogBatchProcess
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - catalogItemsQueue
+              - Arn
+          batchSize: 5
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -129,12 +160,27 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+resources:
+  Resources:
+    catalogItemsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalogItemsQueue
+
+    createProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: "The notification topic for create product events"
+        TopicName: createProductTopic
+
+    emailToSNSUploadProgressNotificationTopicSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: "meroshiniraja19@gmail.com"
+        Protocol: "email"
+        TopicArn:
+          Ref: createProductTopic 
+  
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
