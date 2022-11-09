@@ -95,13 +95,13 @@ provider:
 
 functions:
   importProductsFile:
-    handler: handler.importProductsFile
+    handler: handlers/importProductsFile.importProductsFile
     events:
       - http:
           path: /import
           method: get
   importFileParser:
-    handler: handler.importFileParser
+    handler: handlers/importFileParser.importFileParser
     events:
       - s3:
           bucket: aws-import-service-bucket
@@ -110,7 +110,7 @@ functions:
             - prefix: uploaded/
           existing: true
   catalogBatchProcess:
-    handler: handler.catalogBatchProcess
+    handler: handlers/catalogBatchProcess.catalogBatchProcess
     events:
       - sqs:
           arn:
