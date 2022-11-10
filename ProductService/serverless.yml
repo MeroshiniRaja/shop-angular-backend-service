@@ -198,7 +198,10 @@ resources:
         Endpoint: "meroshiniraja19@gmail.com"
         Protocol: "email"
         TopicArn:
-          Ref: createProductTopic 
+          Ref: createProductTopic
+        FilterPolicy: {
+            price: [{ numeric: ['>', 10] }]
+          }
 
 # Add the serverless-webpack plugin
 
