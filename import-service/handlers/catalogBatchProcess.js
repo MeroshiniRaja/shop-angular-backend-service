@@ -33,8 +33,8 @@ module.exports.catalogBatchProcess = async (event) => {
   
       const snsParams = {
         TopicArn: 'arn:aws:sns:us-east-1:342406933836:createProductTopic',
-        Subject: 'Products processed.',
-        Message: `Products processed: ${JSON.stringify(event.Records)}`,
+        Subject: 'Products Created.',
+        Message: `Products are created newly.`,
       };
   
       await sns.publish(snsParams).promise();

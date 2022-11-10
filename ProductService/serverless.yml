@@ -37,6 +37,22 @@ provider:
           Resource:
               - { "Fn::GetAtt": ["ProductsListTable", "Arn"] }
               - { "Fn::GetAtt": ["StockListTable", "Arn"] }
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - "arn:aws:dynamodb:us-east-1:342406933836:table/ProductsListTable"
+            - "arn:aws:dynamodb:us-east-1:342406933836:table/StockListTable"
+        - Effect: Allow
+          Action:
+            - "sns:*"
+          Resource:
+            Ref: createProductTopic
 
 # you can add statements to the Lambda function's IAM Role here
 #  iam:
@@ -87,6 +103,15 @@ functions:
       - httpApi:
           path: /products
           method: post
+  catalogBatchProcess:
+    handler: catalogBatchProcess.catalogBatchProcess
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - catalogItemsQueue
+              - Arn
+          batchSize: 5
 #      - websocket: $connect
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
@@ -155,6 +180,25 @@ resources:
         KeySchema:
           - AttributeName: product_id
             KeyType: HASH
+
+    catalogItemsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalogItemsQueue
+
+    createProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: "The notification topic for create product events"
+        TopicName: createProductTopic
+
+    emailToSNSUploadProgressNotificationTopicSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: "meroshiniraja19@gmail.com"
+        Protocol: "email"
+        TopicArn:
+          Ref: createProductTopic 
 
 # Add the serverless-webpack plugin
 
