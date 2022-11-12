@@ -9,11 +9,16 @@ module.exports.importProductsFile = async (event) => {
       let params = {
         Bucket: BUCKET,
         Key: objectKey,
+        ContentType: "text/csv",
         Expires: 100
       }
-      const signedUrl = s3.getSignedUrl('getObject',params);
+      const signedUrl = s3.getSignedUrl("putObject", params);
       return {
         statusCode:200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'x-amz-acl': 'public-read' 
+        },
         body:JSON.stringify(signedUrl)
       }
     }
@@ -21,6 +26,9 @@ module.exports.importProductsFile = async (event) => {
       console.log(error);
       return{
         statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
         body: 'Please check the logs'
       }
     }

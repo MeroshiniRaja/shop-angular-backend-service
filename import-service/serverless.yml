@@ -34,8 +34,12 @@ provider:
     role:
       statements:
         - Effect: Allow
-          Action: s3:GetObject
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:PutObjectAcl
           Resource: arn:aws:s3:::aws-import-service-bucket
+          Sid: AllowPublic
         - Effect: Allow
           Action: s3:*
           Resource: arn:aws:s3:::aws-import-service-bucket/*
