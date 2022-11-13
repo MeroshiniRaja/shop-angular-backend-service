@@ -20,6 +20,9 @@ service: import-service
 # Check out our docs for more details
 frameworkVersion: '3'
 
+custom:
+  TopicArn: arn:aws:sns:us-east-1:342406933836:createProductTopic
+
 provider:
   name: aws
   runtime: nodejs14.x
@@ -31,11 +34,18 @@ provider:
     role:
       statements:
         - Effect: Allow
-          Action: s3:GetObject
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:PutObjectAcl
           Resource: arn:aws:s3:::aws-import-service-bucket
+          Sid: AllowPublic
         - Effect: Allow
           Action: s3:*
           Resource: arn:aws:s3:::aws-import-service-bucket/*
+        - Effect: Allow
+          Action: sqs:SendMessage
+          Resource: arn:aws:sqs:us-east-1:342406933836:catalogItemsQueue
           
 # you can overwrite defaults here
 #  stage: dev
@@ -73,13 +83,13 @@ provider:
 
 functions:
   importProductsFile:
-    handler: handler.importProductsFile
+    handler: handlers/importProductsFile.importProductsFile
     events:
       - http:
           path: /import
           method: get
   importFileParser:
-    handler: handler.importFileParser
+    handler: handlers/importFileParser.importFileParser
     events:
       - s3:
           bucket: aws-import-service-bucket
@@ -129,12 +139,7 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+  
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"

@@ -25,6 +25,7 @@
     "serverless-offline": "^11.1.1",
     "serverless-plugin-existing-s3": "^2.4.0",
     "ulid": "^2.3.0",
+    "uuid": "^9.0.0",
     "webpack-node-externals": "^3.0.0"
   }
 }
