@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: import-service
+service: authorization-service
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -20,33 +20,15 @@ service: import-service
 # Check out our docs for more details
 frameworkVersion: '3'
 
-custom:
-  TopicArn: arn:aws:sns:us-east-1:342406933836:createProductTopic
+plugins:
+  - serverless-dotenv-plugin
+
+useDotenv: true
 
 provider:
   name: aws
-  runtime: nodejs14.x
-  stage: dev
-  region: us-east-1
-  httpApi:
-    cors: true
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - s3:GetObject
-            - s3:PutObject
-            - s3:PutObjectAcl
-          Resource: arn:aws:s3:::aws-import-service-bucket
-          Sid: AllowPublic
-        - Effect: Allow
-          Action: s3:*
-          Resource: arn:aws:s3:::aws-import-service-bucket/*
-        - Effect: Allow
-          Action: sqs:SendMessage
-          Resource: arn:aws:sqs:us-east-1:342406933836:catalogItemsQueue
-          
+  runtime: nodejs12.x
+
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -82,29 +64,8 @@ provider:
 #    - include-me-dir/**
 
 functions:
-  importProductsFile:
-    handler: handlers/importProductsFile.importProductsFile
-    events:
-      - http:
-          path: /import
-          method: get
-          cors: true
-          authorizer:
-            #name: authorization-service-dev-basicAuthorizer
-            type: token
-            resultTtlInSeconds: 0
-            identityValidationExpression: '^Basic [-0-9a-zA-Z._=]*$'
-            arn: arn:aws:lambda:us-east-1:342406933836:function:authorization-service-dev-basicAuthorizer
-  importFileParser:
-    handler: handlers/importFileParser.importFileParser
-    events:
-      - s3:
-          bucket: aws-import-service-bucket
-          event: s3:ObjectCreated:*
-          rules:
-            - prefix: uploaded/
-          existing: true
-
+  basicAuthorizer:
+    handler: handler.basicAuthorizer
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -146,10 +107,13 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-  
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
-plugins:
-  - serverless-plugin-existing-s3
