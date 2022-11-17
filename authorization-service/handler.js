@@ -39,7 +39,6 @@ function isValidToken(token){
      const [user, pass] = decoded.split(':');
     
     isValid = process.env[user] === pass;
-    isValid = true;
   }
   
   return isValid;
