@@ -25,7 +25,7 @@ module.exports.basicAuthorizer = async (event) => {
     return authResponse;
   }
   catch(error){
-    console.log(`Unauthorized: ${error?.message}`)
+    console.log(`Unauthorized: ${error}`)
   }
   
 };
