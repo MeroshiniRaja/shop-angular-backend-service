@@ -33,12 +33,13 @@ module.exports.basicAuthorizer = async (event) => {
 function isValidToken(token){
   let isValid = false;
   
-  if(token){
+  if(token && token!== null){
      const [, value] = token.split(' ');
-     const decoded = Buffer.from(value, 'base64').toString('utf8');
-     const [user, pass] = decoded.split(':');
-    
-    isValid = process.env[user] === pass;
+     if(value !== 'null' && value !== ' '){
+      const decoded = Buffer.from(value, 'base64').toString('utf8');
+      const [user, pass] = decoded.split(':');
+      isValid = process.env[user] === pass?true:false;
+     } 
   }
   
   return isValid;
