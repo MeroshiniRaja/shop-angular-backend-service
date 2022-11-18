@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "serverless-auto-swagger": "^2.10.0",
+    "serverless-dotenv-plugin": "^4.0.2",
     "serverless-webpack": "^5.10.0"
   },
   "dependencies": {
